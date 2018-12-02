@@ -14,6 +14,7 @@ infrared (IR) thermopile temperature sensor, based on the
 
 This driver allows you to:
 - Enable/disable the device.
+- Perform a software reset.
 
 ## The device
 

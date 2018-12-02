@@ -54,3 +54,4 @@ macro_rules! method_test {
 
 method_test!(can_enable, enable, CONFIG, CONFIG_DEFAULT, 0);
 method_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0);
+method_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlags::SW_RESET, 0);

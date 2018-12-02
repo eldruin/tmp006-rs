@@ -161,6 +161,14 @@ where
         self.write_config(config.with_low(BitFlags::MOD))
     }
 
+    /// Reset the sensor (software reset).
+    pub fn reset(&mut self) -> Result<(), Error<E>> {
+        let config = self.config;
+        self.write_config(config.with_high(BitFlags::SW_RESET))?;
+        self.config = Config::default();
+        Ok(())
+    }
+
     fn write_config(&mut self, config: Config) -> Result<(), Error<E>> {
         self.i2c
             .write(self.address, &[Register::CONFIG, config.bits, 0])
