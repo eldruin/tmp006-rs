@@ -6,6 +6,7 @@
 //!
 //! This driver allows you to:
 //! - Enable/disable the device.
+//! - Perform a software reset.
 //!
 //! ## The device
 //!
