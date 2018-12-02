@@ -14,7 +14,6 @@ impl Register {
     const DEVICE_ID    : u8 = 0xFE;
 }
 
-
 struct BitFlags;
 impl BitFlags {
     const SW_RESET : u8 = 0b1000_0000;
@@ -24,6 +23,8 @@ impl BitFlags {
     const CR0      : u8 = 0b0000_0010;
     const DRDY_EN  : u8 = 0b0000_0001;
 }
+
+const CONFIG_DEFAULT: u8 = BitFlags::MOD | BitFlags::CR1;
 
 fn new(transactions: &[I2cTrans]) -> Tmp006<I2cMock> {
     Tmp006::new(I2cMock::new(&transactions), SlaveAddr::default())
@@ -36,5 +37,21 @@ fn destroy(tmp: Tmp006<I2cMock>) {
 #[test]
 fn can_create() {
     let tmp = new(&[]);
+    destroy(tmp);
+}
+
+#[test]
+fn can_enable() {
+    let trans = [I2cTrans::write(DEV_ADDR, vec![Register::CONFIG, CONFIG_DEFAULT, 0])];
+    let mut tmp = new(&trans);
+    tmp.enable().unwrap();
+    destroy(tmp);
+}
+
+#[test]
+fn can_disable() {
+    let trans = [I2cTrans::write(DEV_ADDR, vec![Register::CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0])];
+    let mut tmp = new(&trans);
+    tmp.disable().unwrap();
     destroy(tmp);
 }

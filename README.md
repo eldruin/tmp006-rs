@@ -12,6 +12,9 @@ infrared (IR) thermopile temperature sensor, based on the
 
 [`embedded-hal`]: https://github.com/rust-embedded/embedded-hal
 
+This driver allows you to:
+- Enable/disable the device.
+
 ## The device
 
 The TMP006 and TMP006B are the first in a series of temperature sensors

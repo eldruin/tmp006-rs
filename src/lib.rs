@@ -5,7 +5,7 @@
 //! [`embedded-hal`]: https://github.com/rust-embedded/embedded-hal
 //!
 //! This driver allows you to:
-//! - TODO
+//! - Enable/disable the device.
 //!
 //! ## The device
 //!
@@ -73,7 +73,6 @@ impl SlaveAddr {
 const DEVICE_BASE_ADDRESS: u8 = 0b100_0000;
 
 struct Register;
-
 impl Register {
     const V_OBJECT     : u8 = 0x00;
     const TEMP_AMBIENT : u8 = 0x01;
@@ -84,7 +83,6 @@ impl Register {
 
 
 struct BitFlags;
-
 impl BitFlags {
     const SW_RESET : u8 = 0b1000_0000;
     const MOD      : u8 = 0b0111_0000;
@@ -147,6 +145,28 @@ where
     /// Destroy driver instance, return I²C bus instance.
     pub fn destroy(self) -> I2C {
         self.i2c
+    }
+
+    /// Enable the sensor (default state).
+    ///
+    /// Sensor and ambient continuous conversion.
+    pub fn enable(&mut self) -> Result<(), Error<E>> {
+        let config = self.config;
+        self.write_config(config.with_high(BitFlags::MOD))
+    }
+
+    /// Disable the sensor (power-down).
+    pub fn disable(&mut self) -> Result<(), Error<E>> {
+        let config = self.config;
+        self.write_config(config.with_low(BitFlags::MOD))
+    }
+
+    fn write_config(&mut self, config: Config) -> Result<(), Error<E>> {
+        self.i2c
+            .write(self.address, &[Register::CONFIG, config.bits, 0])
+            .map_err(Error::I2C)?;
+        self.config = config;
+        Ok(())
     }
 }
 
