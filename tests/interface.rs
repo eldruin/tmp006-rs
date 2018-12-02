@@ -78,6 +78,7 @@ write_read_test!(can_read_ambient_t_0,   read_ambient_temperature, TEMP_AMBIENT,
 write_read_test!(can_read_ambient_t_min, read_ambient_temperature, TEMP_AMBIENT, 0x80, 0x00, -8192);
 
 write_read_test!(can_read_manuf, read_manufacturer_id, MANUFAC_ID, 0x54, 0x49, 0x5449);
+write_read_test!(can_read_dev_id, read_device_id, DEVICE_ID, 0x00, 0x67, 0x0067);
 
 #[test]
 fn can_read_object_temperature() {
