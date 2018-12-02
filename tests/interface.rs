@@ -76,3 +76,25 @@ write_read_test!(can_read_voltage_min, read_object_voltage, V_OBJECT, 0x80, 0x00
 write_read_test!(can_read_ambient_t_max, read_ambient_temperature, TEMP_AMBIENT, 0x7F, 0xFC,  8191);
 write_read_test!(can_read_ambient_t_0,   read_ambient_temperature, TEMP_AMBIENT,    0,    0,     0);
 write_read_test!(can_read_ambient_t_min, read_ambient_temperature, TEMP_AMBIENT, 0x80, 0x00, -8192);
+
+#[test]
+fn can_read_object_temperature() {
+    /* For some example values of V_obj=514 and T_ambient=257.
+        If you put this into maxima (the program) (or mathematica) you should
+        be able to get the same result: 89996.69046659373.
+        sqrt(sqrt(
+            257^4+(
+                (514 - (-2.94e-5 -5.7e-7*(257-298.15) + 4.63e-9*(257-298.15)²))
+                + 13.4 * (514 - (-2.94e-5 -5.7e-7*(257-298.15) + 4.63e-9*(257-298.15)²))²)
+                 /
+                ( 6e-14*(1+ 1.75e-3*(257-298.15)-1.678e-5*(257-298.15)²) )
+        ))
+    */
+
+    let trans = [I2cTrans::write_read(DEV_ADDR, vec![Register::V_OBJECT], vec![2, 2]),
+                 I2cTrans::write_read(DEV_ADDR, vec![Register::TEMP_AMBIENT], vec![4, 4])];
+    let mut tmp = new(&trans);
+    let current = tmp.read_object_temperature(6e-14).unwrap();
+    assert!((current-89996.69).abs() < 0.1);
+    destroy(tmp);
+}

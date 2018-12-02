@@ -25,6 +25,8 @@
 //!
 //! Datasheet:
 //! - [TMP006/B](http://www.ti.com/ww/eu/sensampbook/tmp006.pdf)
+//! User guide:
+//! - [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
 //!
 #![deny(missing_docs, unsafe_code)]
 //TODO #![deny(warnings)]
@@ -32,6 +34,8 @@
 
 extern crate embedded_hal as hal;
 use hal::blocking::i2c;
+extern crate libm;
+use libm::F64Ext;
 
 /// All possible errors in this crate
 #[derive(Debug)]
@@ -214,6 +218,43 @@ where
         Ok(temp)
     }
 
+
+    /// Read the object temperature in Kelvins.
+    ///
+    /// This uses the sensor voltage and ambient temperature as well as an
+    /// input calibration factor.
+    ///
+    /// The input calibration factor can be calculated with the formulas
+    /// provided in the [TMP006 user guide].
+    /// Typical values are between `5*10^-14` and `7*10^-14`
+    ///
+    /// [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
+    pub fn read_object_temperature(
+        &mut self,
+        calibration_factor: f64
+    ) -> Result<f64, Error<E>> {
+        const A1: f64 = 1.75e-3;
+        const A2: f64 = -1.678e-5;
+        const B0: f64 = -2.94e-5;
+        const B1: f64 = -5.7e-7;
+        const B2: f64 = 4.63e-9;
+        const C2: f64 = 13.4;
+        const T_REF: f64 = 298.15;
+
+        let v_obj = self.read_object_voltage()?;
+        let t_die = self.read_ambient_temperature()?;
+
+        let t_diff = f64::from(t_die) - T_REF;
+        let t_diff_sq = t_diff * t_diff;
+        let vos = B0 + B1*t_diff + B2*t_diff_sq;
+        let v_diff = f64::from(v_obj) - vos;
+        let fv_obj = v_diff + C2*v_diff*v_diff;
+        let s0 = calibration_factor;
+        let s = s0 * (1.0+A1*t_diff +A2*t_diff_sq);
+        let tobj = (libm::pow(f64::from(t_die), 4.0) + fv_obj / s).sqrt().sqrt();
+
+        Ok(tobj)
+    }
 }
 
 #[cfg(test)]
