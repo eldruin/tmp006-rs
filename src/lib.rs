@@ -196,12 +196,8 @@ where
     ///
     /// The result is in the value range `[-32768..32767]`.
     pub fn read_object_voltage(&mut self) -> Result<i16, Error<E>> {
-        let mut data = [0; 2];
-        self.i2c
-            .write_read(self.address, &[Register::V_OBJECT], &mut data)
-            .map_err(Error::I2C)?;
-        let voltage = ((u16::from(data[0]) << 8) | u16::from(data[1])) as i16;
-        Ok(voltage)
+        let v = self.read_register(Register::V_OBJECT)?;
+        Ok(v as i16)
     }
 
     /// Read the ambient temperature.
@@ -213,13 +209,8 @@ where
     ///
     /// The result is in the value range `[-8192..8191]`.
     pub fn read_ambient_temperature(&mut self) -> Result<i16, Error<E>> {
-        let mut data = [0; 2];
-        self.i2c
-            .write_read(self.address, &[Register::TEMP_AMBIENT], &mut data)
-            .map_err(Error::I2C)?;
-        let temp = ((u16::from(data[0]) << 8) | u16::from(data[1])) as i16;
-        let temp = temp / 4;
-        Ok(temp)
+        let temp = self.read_register(Register::TEMP_AMBIENT)?;
+        Ok(temp as i16 / 4)
     }
 
 
@@ -258,6 +249,13 @@ where
         let tobj = (libm::pow(f64::from(t_die), 4.0) + fv_obj / s).sqrt().sqrt();
 
         Ok(tobj)
+    }
+    fn read_register(&mut self, register: u8) -> Result<u16, Error<E>> {
+        let mut data = [0; 2];
+        self.i2c
+            .write_read(self.address, &[register], &mut data)
+            .map_err(Error::I2C)?;
+        Ok((u16::from(data[0]) << 8) | u16::from(data[1]))
     }
 }
 
