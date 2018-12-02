@@ -3,11 +3,15 @@ extern crate linux_embedded_hal;
 extern crate tmp006;
 
 use linux_embedded_hal::I2cdev;
-use tmp006::{Tmp006, SlaveAddr};
+use tmp006::{SlaveAddr, Tmp006};
 
 fn main() {
     let dev = I2cdev::new("/dev/i2c-1").unwrap();
-    let mut sensor = Tmp006::new(dev, SlaveAddr::default());
-    let temperature = sensor.read_object_temperature(6e-14).unwrap();
+    let address = SlaveAddr::default();
+    let mut sensor = Tmp006::new(dev, address);
+    let calibration_factor = 6e-14;
+    let temperature = sensor
+        .read_object_temperature(calibration_factor)
+        .unwrap();
     println!("Temperature: {}K", temperature);
 }
