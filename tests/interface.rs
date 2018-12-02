@@ -40,18 +40,35 @@ fn can_create() {
     destroy(tmp);
 }
 
-macro_rules! method_test {
-    ($name:ident, $method:ident, $reg:ident, $value_msb:expr, $value_lsb:expr $(,$arg:expr),*) => {
+macro_rules! write_test {
+    ($name:ident, $method:ident, $reg:ident, $value_msb:expr, $value_lsb:expr) => {
         #[test]
         fn $name() {
             let trans = [I2cTrans::write(DEV_ADDR, vec![Register::$reg, $value_msb, $value_lsb])];
             let mut tmp = new(&trans);
-            tmp.$method( $($arg)* ).unwrap();
+            tmp.$method().unwrap();
             destroy(tmp);
         }
     };
 }
 
-method_test!(can_enable, enable, CONFIG, CONFIG_DEFAULT, 0);
-method_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0);
-method_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlags::SW_RESET, 0);
+write_test!(can_enable, enable, CONFIG, CONFIG_DEFAULT, 0);
+write_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0);
+write_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlags::SW_RESET, 0);
+
+macro_rules! write_read_test {
+    ($name:ident, $method:ident, $reg:ident, $value_msb:expr, $value_lsb:expr, $expected:expr) => {
+        #[test]
+        fn $name() {
+            let trans = [I2cTrans::write_read(DEV_ADDR, vec![Register::$reg], vec![$value_msb, $value_lsb])];
+            let mut tmp = new(&trans);
+            let current = tmp.$method().unwrap();
+            assert_eq!($expected, current);
+            destroy(tmp);
+        }
+    };
+}
+
+write_read_test!(can_read_voltage_max, read_voltage, V_OBJECT, 0x7F, 0xFF,  32767);
+write_read_test!(can_read_voltage_0,   read_voltage, V_OBJECT,    0,    0,      0);
+write_read_test!(can_read_voltage_min, read_voltage, V_OBJECT, 0x80, 0x00, -32768);

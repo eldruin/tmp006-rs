@@ -179,6 +179,23 @@ where
     }
 }
 
+impl<I2C, E> Tmp006<I2C>
+where
+    I2C: i2c::WriteRead<Error = E>
+{
+    /// Read the sensor voltage.
+    ///
+    /// This can be used in conjunction with the temperature to calculate
+    /// the object temperature.
+    pub fn read_voltage(&mut self) -> Result<i16, Error<E>> {
+        let mut data = [0; 2];
+        self.i2c
+            .write_read(self.address, &[Register::V_OBJECT], &mut data)
+            .map_err(Error::I2C)?;
+        let voltage = ((u16::from(data[0]) << 8) | u16::from(data[1])) as i16;
+        Ok(voltage)
+    }
+}
 
 #[cfg(test)]
 mod tests {
