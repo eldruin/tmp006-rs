@@ -14,7 +14,12 @@ infrared (IR) thermopile temperature sensor, based on the
 
 This driver allows you to:
 - Enable/disable the device.
+- Read the object temperature.
+- Read the object voltage.
+- Read the ambient temperature.
 - Perform a software reset.
+- Read the manufacturer ID.
+- Read the device ID.
 
 ## The device
 
