@@ -40,18 +40,17 @@ fn can_create() {
     destroy(tmp);
 }
 
-#[test]
-fn can_enable() {
-    let trans = [I2cTrans::write(DEV_ADDR, vec![Register::CONFIG, CONFIG_DEFAULT, 0])];
-    let mut tmp = new(&trans);
-    tmp.enable().unwrap();
-    destroy(tmp);
+macro_rules! method_test {
+    ($name:ident, $method:ident, $reg:ident, $value_msb:expr, $value_lsb:expr $(,$arg:expr),*) => {
+        #[test]
+        fn $name() {
+            let trans = [I2cTrans::write(DEV_ADDR, vec![Register::$reg, $value_msb, $value_lsb])];
+            let mut tmp = new(&trans);
+            tmp.$method( $($arg)* ).unwrap();
+            destroy(tmp);
+        }
+    };
 }
 
-#[test]
-fn can_disable() {
-    let trans = [I2cTrans::write(DEV_ADDR, vec![Register::CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0])];
-    let mut tmp = new(&trans);
-    tmp.disable().unwrap();
-    destroy(tmp);
-}
+method_test!(can_enable, enable, CONFIG, CONFIG_DEFAULT, 0);
+method_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0);
