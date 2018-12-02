@@ -14,7 +14,21 @@ infrared (IR) thermopile temperature sensor, based on the
 
 ## The device
 
-TODO
+The TMP006 and TMP006B are the first in a series of temperature sensors
+that measure the temperature of an object without the need to make contact
+with the object. This sensor uses a thermopile to absorb the infrared
+energy emitted from the object being measured and uses the corresponding
+change in thermopile voltage to determine the object temperature.
+
+Infrared sensor voltage range is specified from -40°C to +125°C to enable
+use in a wide range of applications. Low power consumption along with low
+operating voltage makes the device suitable for battery-powered
+applications. The low package height of the chip-scale format enables
+standard high- volume assembly methods, and can be useful where limited
+spacing to the object being measured is available.
+
+Datasheet:
+- [TMP006/B](http://www.ti.com/ww/eu/sensampbook/tmp006.pdf)
 
 ## License
 
