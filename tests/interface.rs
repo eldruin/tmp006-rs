@@ -72,3 +72,7 @@ macro_rules! write_read_test {
 write_read_test!(can_read_voltage_max, read_object_voltage, V_OBJECT, 0x7F, 0xFF,  32767);
 write_read_test!(can_read_voltage_0,   read_object_voltage, V_OBJECT,    0,    0,      0);
 write_read_test!(can_read_voltage_min, read_object_voltage, V_OBJECT, 0x80, 0x00, -32768);
+
+write_read_test!(can_read_ambient_t_max, read_ambient_temperature, TEMP_AMBIENT, 0x7F, 0xFC,  8191);
+write_read_test!(can_read_ambient_t_0,   read_ambient_temperature, TEMP_AMBIENT,    0,    0,     0);
+write_read_test!(can_read_ambient_t_min, read_ambient_temperature, TEMP_AMBIENT, 0x80, 0x00, -8192);

@@ -197,6 +197,23 @@ where
         let voltage = ((u16::from(data[0]) << 8) | u16::from(data[1])) as i16;
         Ok(voltage)
     }
+
+    /// Read the ambient temperature.
+    ///
+    /// This can be used in conjunction with the sensor object voltage to
+    /// calculate the object temperature.
+    ///
+    /// The result is in the value range `[-8192..8191]`.
+    pub fn read_ambient_temperature(&mut self) -> Result<i16, Error<E>> {
+        let mut data = [0; 2];
+        self.i2c
+            .write_read(self.address, &[Register::TEMP_AMBIENT], &mut data)
+            .map_err(Error::I2C)?;
+        let temp = ((u16::from(data[0]) << 8) | u16::from(data[1])) as i16;
+        let temp = temp / 4;
+        Ok(temp)
+    }
+
 }
 
 #[cfg(test)]
