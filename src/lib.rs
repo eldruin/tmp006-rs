@@ -183,11 +183,13 @@ impl<I2C, E> Tmp006<I2C>
 where
     I2C: i2c::WriteRead<Error = E>
 {
-    /// Read the sensor voltage.
+    /// Read the sensor object voltage.
     ///
-    /// This can be used in conjunction with the temperature to calculate
-    /// the object temperature.
-    pub fn read_voltage(&mut self) -> Result<i16, Error<E>> {
+    /// This can be used in conjunction with the ambient temperature to
+    /// calculate the object temperature.
+    ///
+    /// The result is in the value range `[-32768..32767]`.
+    pub fn read_object_voltage(&mut self) -> Result<i16, Error<E>> {
         let mut data = [0; 2];
         self.i2c
             .write_read(self.address, &[Register::V_OBJECT], &mut data)
