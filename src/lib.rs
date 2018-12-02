@@ -190,7 +190,9 @@ where
     /// Read the sensor object voltage.
     ///
     /// This can be used in conjunction with the ambient temperature to
-    /// calculate the object temperature.
+    /// calculate the object temperature. See [`read_object_temperature`].
+    ///
+    /// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
     ///
     /// The result is in the value range `[-32768..32767]`.
     pub fn read_object_voltage(&mut self) -> Result<i16, Error<E>> {
@@ -205,7 +207,9 @@ where
     /// Read the ambient temperature.
     ///
     /// This can be used in conjunction with the sensor object voltage to
-    /// calculate the object temperature.
+    /// calculate the object temperature.See [`read_object_temperature`].
+    ///
+    /// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
     ///
     /// The result is in the value range `[-8192..8191]`.
     pub fn read_ambient_temperature(&mut self) -> Result<i16, Error<E>> {
