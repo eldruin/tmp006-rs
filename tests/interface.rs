@@ -77,6 +77,8 @@ write_read_test!(can_read_ambient_t_max, read_ambient_temperature, TEMP_AMBIENT,
 write_read_test!(can_read_ambient_t_0,   read_ambient_temperature, TEMP_AMBIENT,    0,    0,     0);
 write_read_test!(can_read_ambient_t_min, read_ambient_temperature, TEMP_AMBIENT, 0x80, 0x00, -8192);
 
+write_read_test!(can_read_manuf, read_manufacturer_id, MANUFAC_ID, 0x54, 0x49, 0x5449);
+
 #[test]
 fn can_read_object_temperature() {
     /* For some example values of V_obj=514 and T_ambient=257.

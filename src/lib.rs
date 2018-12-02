@@ -250,6 +250,13 @@ where
 
         Ok(tobj)
     }
+
+    /// Read the manufacturer ID.
+    ///
+    /// This is per default `0x5449`.
+    pub fn read_manufacturer_id(&mut self) -> Result<u16, Error<E>> {
+        self.read_register(Register::MANUFAC_ID)
+    }
     fn read_register(&mut self, register: u8) -> Result<u16, Error<E>> {
         let mut data = [0; 2];
         self.i2c
