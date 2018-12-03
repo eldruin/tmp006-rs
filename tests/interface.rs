@@ -23,8 +23,13 @@ impl BitFlagsHigh {
     const CR0      : u8 = 0b0000_0010;
     const DRDY_EN  : u8 = 0b0000_0001;
 }
+struct BitFlagsLow;
+impl BitFlagsLow {
+    const DRDY : u8 = 0b1000_0000;
+}
 
 const CONFIG_DEFAULT: u8 = BitFlagsHigh::MOD | BitFlagsHigh::CR1;
+const CONFIG_RDY_LOW: u8 = BitFlagsLow::DRDY;
 
 fn new(transactions: &[I2cTrans]) -> Tmp006<I2cMock> {
     Tmp006::new(I2cMock::new(&transactions), SlaveAddr::default())
@@ -88,7 +93,7 @@ sensor_data_test!(can_read_ambient_t_max, 0,  8191, 0, 0, 0x7F, 0xFC);
 sensor_data_test!(can_read_ambient_t_0,   0,     0, 0, 0,    0,    0);
 sensor_data_test!(can_read_ambient_t_min, 0, -8192, 0, 0, 0x80, 0x00);
 
-write_read_test!(can_read_data_ready, is_data_ready, true, [ CONFIG, 0, 0b1000_0000 ]);
+write_read_test!(can_read_data_ready, is_data_ready, true, [ CONFIG, 0, CONFIG_RDY_LOW ]);
 write_read_test!(can_read_data_not_ready, is_data_ready, false, [ CONFIG, 0, 0 ]);
 
 write_read_test!(can_read_manuf, read_manufacturer_id, 0x5449, [ MANUFAC_ID, 0x54, 0x49 ]);
