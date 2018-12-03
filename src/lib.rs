@@ -92,8 +92,8 @@ impl Register {
 }
 
 
-struct BitFlags;
-impl BitFlags {
+struct BitFlagsHigh;
+impl BitFlagsHigh {
     const SW_RESET : u8 = 0b1000_0000;
     const MOD      : u8 = 0b0111_0000;
     const CR2      : u8 = 0b0000_1000;
@@ -103,28 +103,28 @@ impl BitFlags {
 }
 
 #[derive(Debug, Clone, Copy)]
-struct Config {
+struct ConfigHigh {
     bits: u8,
 }
 
-impl Config {
+impl ConfigHigh {
     fn with_high(self, mask: u8) -> Self {
-        Config {
+        ConfigHigh {
             bits: self.bits | mask,
         }
     }
     fn with_low(self, mask: u8) -> Self {
-        Config {
+        ConfigHigh {
             bits: self.bits & !mask,
         }
     }
 }
 
-impl Default for Config {
+impl Default for ConfigHigh {
     fn default() -> Self {
-        Config { bits: 0 }
-            .with_high(BitFlags::MOD)
-            .with_high(BitFlags::CR1)
+        ConfigHigh { bits: 0 }
+            .with_high(BitFlagsHigh::MOD)
+            .with_high(BitFlagsHigh::CR1)
     }
 }
 
@@ -136,7 +136,7 @@ pub struct Tmp006<I2C> {
     /// The I²C device address.
     address: u8,
     /// Configuration register status.
-    config: Config,
+    config: ConfigHigh,
 }
 
 impl<I2C, E> Tmp006<I2C>
@@ -148,7 +148,7 @@ where
         Tmp006 {
             i2c,
             address: address.addr(DEVICE_BASE_ADDRESS),
-            config: Config::default()
+            config: ConfigHigh::default()
         }
     }
 
@@ -162,24 +162,24 @@ where
     /// Sensor and ambient continuous conversion.
     pub fn enable(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
-        self.write_config(config.with_high(BitFlags::MOD))
+        self.write_config(config.with_high(BitFlagsHigh::MOD))
     }
 
     /// Disable the sensor (power-down).
     pub fn disable(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
-        self.write_config(config.with_low(BitFlags::MOD))
+        self.write_config(config.with_low(BitFlagsHigh::MOD))
     }
 
     /// Reset the sensor (software reset).
     pub fn reset(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
-        self.write_config(config.with_high(BitFlags::SW_RESET))?;
-        self.config = Config::default();
+        self.write_config(config.with_high(BitFlagsHigh::SW_RESET))?;
+        self.config = ConfigHigh::default();
         Ok(())
     }
 
-    fn write_config(&mut self, config: Config) -> Result<(), Error<E>> {
+    fn write_config(&mut self, config: ConfigHigh) -> Result<(), Error<E>> {
         self.i2c
             .write(self.address, &[Register::CONFIG, config.bits, 0])
             .map_err(Error::I2C)?;
