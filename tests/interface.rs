@@ -14,8 +14,8 @@ impl Register {
     const DEVICE_ID    : u8 = 0xFE;
 }
 
-struct BitFlags;
-impl BitFlags {
+struct BitFlagsHigh;
+impl BitFlagsHigh {
     const SW_RESET : u8 = 0b1000_0000;
     const MOD      : u8 = 0b0111_0000;
     const CR2      : u8 = 0b0000_1000;
@@ -24,7 +24,7 @@ impl BitFlags {
     const DRDY_EN  : u8 = 0b0000_0001;
 }
 
-const CONFIG_DEFAULT: u8 = BitFlags::MOD | BitFlags::CR1;
+const CONFIG_DEFAULT: u8 = BitFlagsHigh::MOD | BitFlagsHigh::CR1;
 
 fn new(transactions: &[I2cTrans]) -> Tmp006<I2cMock> {
     Tmp006::new(I2cMock::new(&transactions), SlaveAddr::default())
@@ -53,8 +53,8 @@ macro_rules! write_test {
 }
 
 write_test!(can_enable, enable, CONFIG, CONFIG_DEFAULT, 0);
-write_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0);
-write_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlags::SW_RESET, 0);
+write_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlagsHigh::MOD, 0);
+write_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlagsHigh::SW_RESET, 0);
 
 macro_rules! write_read_test {
     ($name:ident, $method:ident, $expected:expr, $( [ $reg:ident, $value_msb:expr, $value_lsb:expr ] ),*) => {
