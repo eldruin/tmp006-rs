@@ -188,37 +188,24 @@ where
     }
 }
 
+/// Data as read from the sensor.
+///
+/// These values can be used to calculate the object temperature as done in
+/// [`read_object_temperature()`].
+///
+/// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct SensorData {
+    /// Object voltage: `[-32768..32767]`
+    pub object_voltage: i16,
+    /// Ambient temperature: `[-8192..8191]`
+    pub ambient_temperature: i16
+}
+
 impl<I2C, E> Tmp006<I2C>
 where
     I2C: i2c::WriteRead<Error = E>
 {
-    /// Read the sensor object voltage.
-    ///
-    /// This can be used in conjunction with the ambient temperature to
-    /// calculate the object temperature. See [`read_object_temperature`].
-    ///
-    /// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
-    ///
-    /// The result is in the value range `[-32768..32767]`.
-    pub fn read_object_voltage(&mut self) -> Result<i16, Error<E>> {
-        let v = self.read_register(Register::V_OBJECT)?;
-        Ok(v as i16)
-    }
-
-    /// Read the ambient temperature.
-    ///
-    /// This can be used in conjunction with the sensor object voltage to
-    /// calculate the object temperature.See [`read_object_temperature`].
-    ///
-    /// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
-    ///
-    /// The result is in the value range `[-8192..8191]`.
-    pub fn read_ambient_temperature(&mut self) -> Result<i16, Error<E>> {
-        let temp = self.read_register(Register::TEMP_AMBIENT)?;
-        Ok(temp as i16 / 4)
-    }
-
-
     /// Read the object temperature in Kelvins.
     ///
     /// This uses the sensor voltage and ambient temperature as well as an
@@ -241,8 +228,9 @@ where
         const C2: f64 = 13.4;
         const T_REF: f64 = 298.15;
 
-        let v_obj = self.read_object_voltage()?;
-        let t_die = self.read_ambient_temperature()?;
+        let data = self.read_sensor_data()?;
+        let v_obj = data.object_voltage;
+        let t_die = data.ambient_temperature;
 
         let t_diff = f64::from(t_die) - T_REF;
         let t_diff_sq = t_diff * t_diff;
@@ -254,6 +242,22 @@ where
         let tobj = (libm::pow(f64::from(t_die), 4.0) + fv_obj / s).sqrt().sqrt();
 
         Ok(tobj)
+    }
+
+    /// Read the data from the sensor.
+    ///
+    /// These values can be used to calculate the object temperature as done in
+    /// [`read_object_temperature()`].
+    ///
+    /// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
+    pub fn read_sensor_data(&mut self) -> Result<SensorData, Error<E>> {
+        let v = self.read_register(Register::V_OBJECT)?;
+        let temp = self.read_register(Register::TEMP_AMBIENT)?;
+        let data = SensorData {
+            object_voltage: v as i16,
+            ambient_temperature: temp as i16 / 4,
+        };
+        Ok(data)
     }
 
     /// Read the manufacturer ID.

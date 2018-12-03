@@ -1,5 +1,5 @@
 extern crate tmp006;
-use tmp006::{Error, SlaveAddr, Tmp006};
+use tmp006::{SensorData, SlaveAddr, Tmp006};
 extern crate embedded_hal_mock as hal;
 use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 
@@ -57,10 +57,10 @@ write_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlags::MOD, 0);
 write_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlags::SW_RESET, 0);
 
 macro_rules! write_read_test {
-    ($name:ident, $method:ident, $reg:ident, $value_msb:expr, $value_lsb:expr, $expected:expr) => {
+    ($name:ident, $method:ident, $expected:expr, $( [ $reg:ident, $value_msb:expr, $value_lsb:expr ] ),*) => {
         #[test]
         fn $name() {
-            let trans = [I2cTrans::write_read(DEV_ADDR, vec![Register::$reg], vec![$value_msb, $value_lsb])];
+            let trans = [ $( I2cTrans::write_read(DEV_ADDR, vec![Register::$reg], vec![$value_msb, $value_lsb]) ),* ];
             let mut tmp = new(&trans);
             let current = tmp.$method().unwrap();
             assert_eq!($expected, current);
@@ -69,16 +69,27 @@ macro_rules! write_read_test {
     };
 }
 
-write_read_test!(can_read_voltage_max, read_object_voltage, V_OBJECT, 0x7F, 0xFF,  32767);
-write_read_test!(can_read_voltage_0,   read_object_voltage, V_OBJECT,    0,    0,      0);
-write_read_test!(can_read_voltage_min, read_object_voltage, V_OBJECT, 0x80, 0x00, -32768);
+macro_rules! sensor_data_test {
+    ($name:ident, $object_volt:expr, $ambient_temp:expr, $msb_v:expr, $lsb_v:expr, $msb_t:expr, $lsb_t:expr) => {
+        write_read_test!(
+            $name, read_sensor_data,
+            SensorData { object_voltage: $object_volt, ambient_temperature: $ambient_temp },
+            [ V_OBJECT, $msb_v, $lsb_v ],
+            [ TEMP_AMBIENT, $msb_t, $lsb_t ]
+        );
+    };
+}
 
-write_read_test!(can_read_ambient_t_max, read_ambient_temperature, TEMP_AMBIENT, 0x7F, 0xFC,  8191);
-write_read_test!(can_read_ambient_t_0,   read_ambient_temperature, TEMP_AMBIENT,    0,    0,     0);
-write_read_test!(can_read_ambient_t_min, read_ambient_temperature, TEMP_AMBIENT, 0x80, 0x00, -8192);
+sensor_data_test!(can_read_voltage_max,  32767, 0, 0x7F, 0xFF, 0, 0);
+sensor_data_test!(can_read_voltage_0,        0, 0,    0,    0, 0, 0);
+sensor_data_test!(can_read_voltage_min, -32768, 0, 0x80, 0x00, 0, 0);
 
-write_read_test!(can_read_manuf, read_manufacturer_id, MANUFAC_ID, 0x54, 0x49, 0x5449);
-write_read_test!(can_read_dev_id, read_device_id, DEVICE_ID, 0x00, 0x67, 0x0067);
+sensor_data_test!(can_read_ambient_t_max, 0,  8191, 0, 0, 0x7F, 0xFC);
+sensor_data_test!(can_read_ambient_t_0,   0,     0, 0, 0,    0,    0);
+sensor_data_test!(can_read_ambient_t_min, 0, -8192, 0, 0, 0x80, 0x00);
+
+write_read_test!(can_read_manuf, read_manufacturer_id, 0x5449, [ MANUFAC_ID, 0x54, 0x49 ]);
+write_read_test!(can_read_dev_id, read_device_id, 0x0067, [ DEVICE_ID, 0x00, 0x67 ]);
 
 #[test]
 fn can_read_object_temperature() {
