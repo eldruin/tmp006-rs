@@ -101,6 +101,10 @@ impl BitFlagsHigh {
     const CR0      : u8 = 0b0000_0010;
     const DRDY_EN  : u8 = 0b0000_0001;
 }
+struct BitFlagsLow;
+impl BitFlagsLow {
+    const DRDY     : u8 = 0b1000_0000;
+}
 
 #[derive(Debug, Clone, Copy)]
 struct ConfigHigh {
@@ -258,6 +262,14 @@ where
             ambient_temperature: temp as i16 / 4,
         };
         Ok(data)
+    }
+
+    /// Reads whether there is data ready to be read.
+    ///
+    /// When this returens `false` it means that a conversion is in progress.
+    pub fn is_data_ready(&mut self) -> Result<bool, Error<E>> {
+        let config = self.read_register(Register::CONFIG)?;
+        Ok((config & BitFlagsLow::DRDY as u16) != 0)
     }
 
     /// Read the manufacturer ID.

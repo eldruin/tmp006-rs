@@ -88,6 +88,9 @@ sensor_data_test!(can_read_ambient_t_max, 0,  8191, 0, 0, 0x7F, 0xFC);
 sensor_data_test!(can_read_ambient_t_0,   0,     0, 0, 0,    0,    0);
 sensor_data_test!(can_read_ambient_t_min, 0, -8192, 0, 0, 0x80, 0x00);
 
+write_read_test!(can_read_data_ready, is_data_ready, true, [ CONFIG, 0, 0b1000_0000 ]);
+write_read_test!(can_read_data_not_ready, is_data_ready, false, [ CONFIG, 0, 0 ]);
+
 write_read_test!(can_read_manuf, read_manufacturer_id, 0x5449, [ MANUFAC_ID, 0x54, 0x49 ]);
 write_read_test!(can_read_dev_id, read_device_id, 0x0067, [ DEVICE_ID, 0x00, 0x67 ]);
 
