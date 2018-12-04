@@ -39,6 +39,7 @@
 
 extern crate embedded_hal as hal;
 use hal::blocking::i2c;
+extern crate nb;
 extern crate libm;
 use libm::F64Ext;
 
@@ -223,7 +224,7 @@ where
     pub fn read_object_temperature(
         &mut self,
         calibration_factor: f64
-    ) -> Result<f64, Error<E>> {
+    ) -> nb::Result<f64, Error<E>> {
         const A1: f64 = 1.75e-3;
         const A2: f64 = -1.678e-5;
         const B0: f64 = -2.94e-5;
@@ -254,9 +255,13 @@ where
     /// [`read_object_temperature()`].
     ///
     /// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
-    pub fn read_sensor_data(&mut self) -> Result<SensorData, Error<E>> {
-        let v = self.read_register(Register::V_OBJECT)?;
-        let temp = self.read_register(Register::TEMP_AMBIENT)?;
+    pub fn read_sensor_data(&mut self) -> nb::Result<SensorData, Error<E>> {
+        let ready = self.is_data_ready().map_err(nb::Error::Other)?;
+        if !ready {
+            return Err(nb::Error::WouldBlock);
+        }
+        let v = self.read_register(Register::V_OBJECT).map_err(nb::Error::Other)?;
+        let temp = self.read_register(Register::TEMP_AMBIENT).map_err(nb::Error::Other)?;
         let data = SensorData {
             object_voltage: v as i16,
             ambient_temperature: temp as i16 / 4,

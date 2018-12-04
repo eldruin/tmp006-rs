@@ -1,3 +1,4 @@
+extern crate nb;
 extern crate tmp006;
 use tmp006::{SensorData, SlaveAddr, Tmp006};
 extern crate embedded_hal_mock as hal;
@@ -65,7 +66,9 @@ macro_rules! write_read_test {
     ($name:ident, $method:ident, $expected:expr, $( [ $reg:ident, $value_msb:expr, $value_lsb:expr ] ),*) => {
         #[test]
         fn $name() {
-            let trans = [ $( I2cTrans::write_read(DEV_ADDR, vec![Register::$reg], vec![$value_msb, $value_lsb]) ),* ];
+            let trans = [
+                $( I2cTrans::write_read(DEV_ADDR, vec![Register::$reg], vec![$value_msb, $value_lsb]) ),*
+            ];
             let mut tmp = new(&trans);
             let current = tmp.$method().unwrap();
             assert_eq!($expected, current);
@@ -79,6 +82,7 @@ macro_rules! sensor_data_test {
         write_read_test!(
             $name, read_sensor_data,
             SensorData { object_voltage: $object_volt, ambient_temperature: $ambient_temp },
+            [ CONFIG, CONFIG_DEFAULT, CONFIG_RDY_LOW],
             [ V_OBJECT, $msb_v, $lsb_v ],
             [ TEMP_AMBIENT, $msb_t, $lsb_t ]
         );
@@ -99,6 +103,37 @@ write_read_test!(can_read_data_not_ready, is_data_ready, false, [ CONFIG, 0, 0 ]
 write_read_test!(can_read_manuf, read_manufacturer_id, 0x5449, [ MANUFAC_ID, 0x54, 0x49 ]);
 write_read_test!(can_read_dev_id, read_device_id, 0x0067, [ DEVICE_ID, 0x00, 0x67 ]);
 
+macro_rules! assert_would_block {
+    ($result: expr) => {
+        match $result {
+            Err(nb::Error::WouldBlock) => (),
+            _ => panic!("Would not block."),
+        }
+    };
+}
+
+#[test]
+fn cannot_read_object_temperature_if_not_ready() {
+    let trans = [
+        I2cTrans::write_read(DEV_ADDR, vec![Register::CONFIG], vec![0, 0])
+    ];
+    let mut tmp = new(&trans);
+    let result = tmp.read_object_temperature(6e-14);
+    assert_would_block!(result);
+    destroy(tmp);
+}
+
+#[test]
+fn cannot_read_data_if_not_ready() {
+    let trans = [
+        I2cTrans::write_read(DEV_ADDR, vec![Register::CONFIG], vec![0, 0])
+    ];
+    let mut tmp = new(&trans);
+    let result = tmp.read_sensor_data();
+    assert_would_block!(result);
+    destroy(tmp);
+}
+
 #[test]
 fn can_read_object_temperature() {
     /* For some example values of V_obj=514 and T_ambient=257.
@@ -113,8 +148,11 @@ fn can_read_object_temperature() {
         ))
     */
 
-    let trans = [I2cTrans::write_read(DEV_ADDR, vec![Register::V_OBJECT], vec![2, 2]),
-                 I2cTrans::write_read(DEV_ADDR, vec![Register::TEMP_AMBIENT], vec![4, 4])];
+    let trans = [
+        I2cTrans::write_read(DEV_ADDR, vec![Register::CONFIG], vec![0, CONFIG_RDY_LOW]),
+        I2cTrans::write_read(DEV_ADDR, vec![Register::V_OBJECT], vec![2, 2]),
+        I2cTrans::write_read(DEV_ADDR, vec![Register::TEMP_AMBIENT], vec![4, 4])
+    ];
     let mut tmp = new(&trans);
     let current = tmp.read_object_temperature(6e-14).unwrap();
     assert!((current-89996.69).abs() < 0.1);
