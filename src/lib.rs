@@ -165,18 +165,24 @@ where
     /// Enable the sensor (default state).
     ///
     /// Sensor and ambient continuous conversion.
+    ///
+    /// Note: calling this clears the data ready bit.
     pub fn enable(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_high(BitFlagsHigh::MOD))
     }
 
     /// Disable the sensor (power-down).
+    ///
+    /// Note: calling this clears the data ready bit.
     pub fn disable(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_low(BitFlagsHigh::MOD))
     }
 
     /// Reset the sensor (software reset).
+    ///
+    /// Note: calling this clears the data ready bit.
     pub fn reset(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_high(BitFlagsHigh::SW_RESET))?;
