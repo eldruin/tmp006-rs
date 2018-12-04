@@ -180,7 +180,7 @@ where
     ///
     /// Sensor and ambient continuous conversion.
     ///
-    /// Note: calling this clears the data ready bit.
+    /// Note: calling this clears the data-ready bit.
     pub fn enable(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_high(BitFlagsHigh::MOD))
@@ -188,7 +188,7 @@ where
 
     /// Disable the sensor (power-down).
     ///
-    /// Note: calling this clears the data ready bit.
+    /// Note: calling this clears the data-ready bit.
     pub fn disable(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_low(BitFlagsHigh::MOD))
@@ -196,7 +196,7 @@ where
 
     /// Reset the sensor (software reset).
     ///
-    /// Note: calling this clears the data ready bit.
+    /// Note: calling this clears the data-ready bit.
     pub fn reset(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_high(BitFlagsHigh::SW_RESET))?;
@@ -206,7 +206,7 @@ where
 
     /// Enable DRDY pin.
     ///
-    /// Note: calling this clears the data ready bit.
+    /// Note: calling this clears the data-ready bit.
     pub fn enable_drdy_pin(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_high(BitFlagsHigh::DRDY_EN))
@@ -214,7 +214,7 @@ where
 
     /// Disable DRDY pin.
     ///
-    /// Note: calling this clears the data ready bit.
+    /// Note: calling this clears the data-ready bit.
     pub fn disable_drdy_pin(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_low(BitFlagsHigh::DRDY_EN))
