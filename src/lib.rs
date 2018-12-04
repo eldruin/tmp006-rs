@@ -190,6 +190,22 @@ where
         Ok(())
     }
 
+    /// Enable DRDY pin.
+    ///
+    /// Note: calling this clears the data ready bit.
+    pub fn enable_drdy_pin(&mut self) -> Result<(), Error<E>> {
+        let config = self.config;
+        self.write_config(config.with_high(BitFlagsHigh::DRDY_EN))
+    }
+
+    /// Disable DRDY pin.
+    ///
+    /// Note: calling this clears the data ready bit.
+    pub fn disable_drdy_pin(&mut self) -> Result<(), Error<E>> {
+        let config = self.config;
+        self.write_config(config.with_low(BitFlagsHigh::DRDY_EN))
+    }
+
     fn write_config(&mut self, config: ConfigHigh) -> Result<(), Error<E>> {
         self.i2c
             .write(self.address, &[Register::CONFIG, config.bits, 0])

@@ -61,6 +61,8 @@ macro_rules! write_test {
 write_test!(can_enable, enable, CONFIG, CONFIG_DEFAULT, 0);
 write_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlagsHigh::MOD, 0);
 write_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlagsHigh::SW_RESET, 0);
+write_test!(can_enable_drdy, enable_drdy_pin, CONFIG, CONFIG_DEFAULT | BitFlagsHigh::DRDY_EN, 0);
+write_test!(can_disable_drdy, disable_drdy_pin, CONFIG, CONFIG_DEFAULT, 0);
 
 macro_rules! write_read_test {
     ($name:ident, $method:ident, $expected:expr, $( [ $reg:ident, $value_msb:expr, $value_lsb:expr ] ),*) => {
