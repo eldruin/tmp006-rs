@@ -50,6 +50,20 @@ pub enum Error<E> {
     I2C(E),
 }
 
+/// Data as read from the sensor.
+///
+/// These values can be used to calculate the object temperature as done in
+/// [`read_object_temperature()`].
+///
+/// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct SensorData {
+    /// Object voltage: `[-32768..32767]`
+    pub object_voltage: i16,
+    /// Ambient temperature: `[-8192..8191]`
+    pub ambient_temperature: i16
+}
+
 /// Possible slave addresses
 #[derive(Debug, Clone)]
 pub enum SlaveAddr {
@@ -213,20 +227,6 @@ where
         self.config = config;
         Ok(())
     }
-}
-
-/// Data as read from the sensor.
-///
-/// These values can be used to calculate the object temperature as done in
-/// [`read_object_temperature()`].
-///
-/// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub struct SensorData {
-    /// Object voltage: `[-32768..32767]`
-    pub object_voltage: i16,
-    /// Ambient temperature: `[-8192..8191]`
-    pub ambient_temperature: i16
 }
 
 impl<I2C, E> Tmp006<I2C>
