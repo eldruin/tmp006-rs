@@ -50,6 +50,21 @@ pub enum Error<E> {
     I2C(E),
 }
 
+/// ADC conversion rate
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ConversionRate {
+    /// 4 conversions per second
+    Cps4,
+    /// 2 conversions per second
+    Cps2,
+    /// 1 conversion per second (default)
+    Cps1,
+    /// 0.5 conversions per second
+    Cps0_5,
+    /// 0.25 conversions per second
+    Cps0_25,
+}
+
 /// Data as read from the sensor.
 ///
 /// These values can be used to calculate the object temperature as done in
@@ -218,6 +233,23 @@ where
     pub fn disable_drdy_pin(&mut self) -> Result<(), Error<E>> {
         let config = self.config;
         self.write_config(config.with_low(BitFlagsHigh::DRDY_EN))
+    }
+
+    /// Set the ADC conversion rate.
+    ///
+    /// Note: calling this clears the data-ready bit.
+    pub fn set_conversion_rate(&mut self, rate: ConversionRate) -> Result<(), Error<E>> {
+        use BitFlagsHigh as BF;
+        use ConversionRate as CR;
+        let config;
+        match rate {
+            CR::Cps4    => config = self.config.with_low( BF::CR2).with_low( BF::CR1).with_low( BF::CR0),
+            CR::Cps2    => config = self.config.with_low( BF::CR2).with_low( BF::CR1).with_high(BF::CR0),
+            CR::Cps1    => config = self.config.with_low( BF::CR2).with_high(BF::CR1).with_low( BF::CR0),
+            CR::Cps0_5  => config = self.config.with_low( BF::CR2).with_high(BF::CR1).with_high(BF::CR0),
+            CR::Cps0_25 => config = self.config.with_high(BF::CR2).with_low( BF::CR1).with_low( BF::CR0),
+        }
+        self.write_config(config)
     }
 
     fn write_config(&mut self, config: ConfigHigh) -> Result<(), Error<E>> {

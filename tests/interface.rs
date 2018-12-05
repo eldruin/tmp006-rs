@@ -1,6 +1,6 @@
 extern crate nb;
 extern crate tmp006;
-use tmp006::{SensorData, SlaveAddr, Tmp006};
+use tmp006::{ConversionRate, SensorData, SlaveAddr, Tmp006};
 extern crate embedded_hal_mock as hal;
 use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 
@@ -47,12 +47,12 @@ fn can_create() {
 }
 
 macro_rules! write_test {
-    ($name:ident, $method:ident, $reg:ident, $value_msb:expr, $value_lsb:expr) => {
+    ($name:ident, $method:ident, $reg:ident, $value_msb:expr, $value_lsb:expr $( ,$arg:expr )*) => {
         #[test]
         fn $name() {
             let trans = [I2cTrans::write(DEV_ADDR, vec![Register::$reg, $value_msb, $value_lsb])];
             let mut tmp = new(&trans);
-            tmp.$method().unwrap();
+            tmp.$method($( $arg, )*).unwrap();
             destroy(tmp);
         }
     };
@@ -63,6 +63,33 @@ write_test!(can_disable, disable, CONFIG, CONFIG_DEFAULT & !BitFlagsHigh::MOD, 0
 write_test!(can_reset, reset, CONFIG, CONFIG_DEFAULT | BitFlagsHigh::SW_RESET, 0);
 write_test!(can_enable_drdy, enable_drdy_pin, CONFIG, CONFIG_DEFAULT | BitFlagsHigh::DRDY_EN, 0);
 write_test!(can_disable_drdy, disable_drdy_pin, CONFIG, CONFIG_DEFAULT, 0);
+
+fn get_config_high(cr2: bool, cr1: bool, cr0: bool) -> u8 {
+    let mut config = BitFlagsHigh::MOD;
+    if cr2 {
+        config |= BitFlagsHigh::CR2;
+    }
+    if cr1 {
+        config |= BitFlagsHigh::CR1;
+    }
+    if cr0 {
+        config |= BitFlagsHigh::CR0;
+    }
+    config
+}
+
+macro_rules! conversion_rate_test {
+    ($name:ident, $variant:ident, $cr2:expr, $cr1:expr, $cr0:expr) => {
+        write_test!($name, set_conversion_rate, CONFIG,
+            get_config_high($cr2, $cr1, $cr0), 0, ConversionRate::$variant);
+    }
+}
+
+conversion_rate_test!(can_set_cr4,    Cps4,    false, false, false);
+conversion_rate_test!(can_set_cr2,    Cps2,    false, false,  true);
+conversion_rate_test!(can_set_cr1,    Cps1,    false,  true, false);
+conversion_rate_test!(can_set_cr0_5,  Cps0_5,  false,  true,  true);
+conversion_rate_test!(can_set_cr0_25, Cps0_25,  true, false, false);
 
 macro_rules! write_read_test {
     ($name:ident, $method:ident, $expected:expr, $( [ $reg:ident, $value_msb:expr, $value_lsb:expr ] ),*) => {
