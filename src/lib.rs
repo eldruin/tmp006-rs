@@ -46,14 +46,14 @@
 //! User guide:
 //! - [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
 //!
-#![deny(missing_docs, unsafe_code)]
-//TODO #![deny(warnings)]
+#![deny(missing_docs, unsafe_code, warnings)]
 #![no_std]
 
 extern crate embedded_hal as hal;
 use hal::blocking::i2c;
 extern crate nb;
 extern crate libm;
+#[allow(unused_imports)] // necessary only for targets without math function implementation
 use libm::F64Ext;
 
 /// All possible errors in this crate
