@@ -341,7 +341,7 @@ where
     /// When this returens `false` it means that a conversion is in progress.
     pub fn is_data_ready(&mut self) -> Result<bool, Error<E>> {
         let config = self.read_register(Register::CONFIG)?;
-        Ok((config & BitFlagsLow::DRDY as u16) != 0)
+        Ok((config & u16::from(BitFlagsLow::DRDY)) != 0)
     }
 
     /// Read the manufacturer ID.
