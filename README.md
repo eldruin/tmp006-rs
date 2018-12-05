@@ -13,13 +13,15 @@ infrared (IR) thermopile temperature sensor, based on the
 [`embedded-hal`]: https://github.com/rust-embedded/embedded-hal
 
 This driver allows you to:
-- Enable/disable the device.
-- Read the object temperature.
-- Read the object voltage.
-- Read the ambient temperature.
-- Perform a software reset.
-- Read the manufacturer ID.
-- Read the device ID.
+- Enable/disable the device. See: `enable()`.
+- Read the object temperature. See: `read_object_temperature()`.
+- Read the object voltage and ambient temperature data. See: `read_sensor_data()`.
+- Set the ADC conversion rate. See: `set_conversion_rate()`.
+- Enable/disable the DRDY pin. See: `enable_drdy_pin()`.
+- Read whether data is ready to be read. See: `is_data_ready()`.
+- Perform a software reset. See: `reset()`.
+- Read the manufacturer ID. See: `read_manufacturer_id()`.
+- Read the device ID. See: `read_device_id()`.
 
 ## The device
 

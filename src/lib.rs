@@ -5,13 +5,26 @@
 //! [`embedded-hal`]: https://github.com/rust-embedded/embedded-hal
 //!
 //! This driver allows you to:
-//! - Enable/disable the device.
-//! - Read the object temperature.
-//! - Read the object voltage.
-//! - Read the ambient temperature.
-//! - Perform a software reset.
-//! - Read the manufacturer ID.
-//! - Read the device ID.
+//! - Enable/disable the device. See: [`enable()`].
+//! - Read the object temperature. See: [`read_object_temperature()`].
+//! - Read the object voltage and ambient temperature data. See: [`read_sensor_data()`].
+//! - Set the ADC conversion rate. See: [`set_conversion_rate()`].
+//! - Enable/disable the DRDY pin. See: [`enable_drdy_pin()`].
+//! - Read whether data is ready to be read. See: [`is_data_ready()`].
+//! - Perform a software reset. See: [`reset()`].
+//! - Read the manufacturer ID. See: [`read_manufacturer_id()`].
+//! - Read the device ID. See: [`read_device_id()`].
+//!
+//! [`enable()`]: struct.Tmp006.html#method.enable
+//! [`read_object_temperature()`]: struct.Tmp006.html#method.read_object_temperature
+//! [`read_sensor_data()`]: struct.Tmp006.html#method.read_sensor_data
+//! [`set_conversion_rate()`]: struct.Tmp006.html#method.set_conversion_rate
+//! [`enable_drdy_pin()`]: struct.Tmp006.html#method.enable_drdy_pin
+//! [`is_data_ready()`]: struct.Tmp006.html#method.is_data_ready
+//! [`reset()`]: struct.Tmp006.html#method.reset
+//! [`read_manufacturer_id()`]: struct.Tmp006.html#method.read_manufacturer_id
+//! [`read_device_id()`]: struct.Tmp006.html#method.read_device_id
+//!
 //!
 //! ## The device
 //!
@@ -70,7 +83,7 @@ pub enum ConversionRate {
 /// These values can be used to calculate the object temperature as done in
 /// [`read_object_temperature()`].
 ///
-/// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
+/// [`read_object_temperature()`]: struct.Tmp006.html#method.read_object_temperature
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct SensorData {
     /// Object voltage: `[-32768..32767]`
@@ -308,7 +321,7 @@ where
     /// These values can be used to calculate the object temperature as done in
     /// [`read_object_temperature()`].
     ///
-    /// [`read_object_temperature`]: struct.Tmp006.html#method.read_object_temperature
+    /// [`read_object_temperature()`]: struct.Tmp006.html#method.read_object_temperature
     pub fn read_sensor_data(&mut self) -> nb::Result<SensorData, Error<E>> {
         let ready = self.is_data_ready().map_err(nb::Error::Other)?;
         if !ready {
