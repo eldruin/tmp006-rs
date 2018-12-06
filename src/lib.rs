@@ -94,6 +94,7 @@
 //! let mut sensor = Tmp006::new(dev, address);
 //! # }
 //! ```
+//!
 //! ### Read raw sensor data
 //!
 //! ```no_run
@@ -115,6 +116,57 @@
 //! # }
 //! ```
 //!
+//! ### Set the conversion rate to 2 per second
+//!
+//! ```no_run
+//! extern crate linux_embedded_hal as hal;
+//! extern crate tmp006;
+//!
+//! use hal::I2cdev;
+//! use tmp006::{ConversionRate, Tmp006, SlaveAddr};
+//!
+//! # fn main() {
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//! let mut sensor = Tmp006::new(dev, SlaveAddr::default());
+//! sensor.set_conversion_rate(ConversionRate::Cps2).unwrap();
+//! # }
+//! ```
+//!
+//! ### Enable the DRDY (data ready) pin
+//!
+//! ```no_run
+//! extern crate linux_embedded_hal as hal;
+//! extern crate tmp006;
+//!
+//! use hal::I2cdev;
+//! use tmp006::{ConversionRate, Tmp006, SlaveAddr};
+//!
+//! # fn main() {
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//! let mut sensor = Tmp006::new(dev, SlaveAddr::default());
+//! sensor.enable_drdy_pin().unwrap();
+//! # }
+//! ```
+//!
+//! ### Read whether the data is ready to be read
+//!
+//! ```no_run
+//! extern crate linux_embedded_hal as hal;
+//! extern crate tmp006;
+//!
+//! use hal::I2cdev;
+//! use tmp006::{ConversionRate, Tmp006, SlaveAddr};
+//!
+//! # fn main() {
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//! let mut sensor = Tmp006::new(dev, SlaveAddr::default());
+//! loop {
+//!     let ready = sensor.is_data_ready().unwrap();
+//!     println!("Data ready?: {}", ready);
+//!     // add some delay here...
+//! }
+//! # }
+//! ```
 #![deny(missing_docs, unsafe_code, warnings)]
 #![no_std]
 
