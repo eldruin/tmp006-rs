@@ -40,6 +40,8 @@ spacing to the object being measured is available.
 
 Datasheet:
 - [TMP006/B](http://www.ti.com/ww/eu/sensampbook/tmp006.pdf)
+User guide:
+- [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
 
 ## Usage example
 
