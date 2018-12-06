@@ -7,7 +7,7 @@
 //! This driver allows you to:
 //! - Enable/disable the device. See: [`enable()`].
 //! - Read the object temperature. See: [`read_object_temperature()`].
-//! - Read the object voltage and ambient temperature data. See: [`read_sensor_data()`].
+//! - Read the object voltage and ambient temperature raw data. See: [`read_sensor_data()`].
 //! - Set the ADC conversion rate. See: [`set_conversion_rate()`].
 //! - Enable/disable the DRDY pin. See: [`enable_drdy_pin()`].
 //! - Read whether data is ready to be read. See: [`is_data_ready()`].
