@@ -469,6 +469,7 @@ where
     /// Reads whether there is data ready to be read.
     ///
     /// When this returens `false` it means that a conversion is in progress.
+    #[allow(clippy::wrong_self_convention)]
     pub fn is_data_ready(&mut self) -> Result<bool, Error<E>> {
         let config = self.read_register(Register::CONFIG)?;
         Ok((config & u16::from(BitFlagsLow::DRDY)) != 0)
