@@ -436,9 +436,7 @@ where
         let fv_obj = v_diff + C2 * v_diff * v_diff;
         let s0 = calibration_factor;
         let s = s0 * (1.0 + A1 * t_diff + A2 * t_diff_sq);
-        let tobj = (libm::pow(f64::from(t_die), 4.0) + fv_obj / s)
-            .sqrt()
-            .sqrt();
+        let tobj = libm::pow(libm::pow(f64::from(t_die_k), 4.0) + fv_obj / s, 0.25);
 
         Ok(tobj)
     }
