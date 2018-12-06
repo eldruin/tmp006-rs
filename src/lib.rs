@@ -429,14 +429,14 @@ where
         let v_obj = f64::from(data.object_voltage) * V_LSB_SIZE;
         let t_die_k = f64::from(data.ambient_temperature) / 128.0 + 273.15;
 
-        let t_diff = f64::from(t_die_k) - T_REF;
+        let t_diff = t_die_k - T_REF;
         let t_diff_sq = t_diff * t_diff;
         let vos = B0 + B1 * t_diff + B2 * t_diff_sq;
-        let v_diff = f64::from(v_obj) - vos;
+        let v_diff = v_obj - vos;
         let fv_obj = v_diff + C2 * v_diff * v_diff;
         let s0 = calibration_factor;
         let s = s0 * (1.0 + A1 * t_diff + A2 * t_diff_sq);
-        let tobj = libm::pow(libm::pow(f64::from(t_die_k), 4.0) + fv_obj / s, 0.25);
+        let tobj = libm::pow(libm::pow(t_die_k, 4.0) + fv_obj / s, 0.25);
 
         Ok(tobj)
     }
