@@ -120,9 +120,10 @@
 
 extern crate embedded_hal as hal;
 use hal::blocking::i2c;
-extern crate nb;
 extern crate libm;
-#[allow(unused_imports)] // necessary only for targets without math function implementation
+extern crate nb;
+// necessary only for targets without math function implementation
+#[allow(unused_imports)]
 use libm::F64Ext;
 
 /// All possible errors in this crate
@@ -158,7 +159,7 @@ pub struct SensorData {
     /// Object voltage: `[-32768..32767]`
     pub object_voltage: i16,
     /// Ambient temperature: `[-8192..8191]`
-    pub ambient_temperature: i16
+    pub ambient_temperature: i16,
 }
 
 /// Possible slave addresses
@@ -170,7 +171,7 @@ pub enum SlaveAddr {
     ///
     /// Some of these combinations require connecting the ADDR0 pin to
     /// SCL or SDA. Check table 1 on page 7 of the datasheet: [TMP006/B].
-    Alternative(bool, bool, bool)
+    Alternative(bool, bool, bool),
 }
 
 impl Default for SlaveAddr {
@@ -184,12 +185,14 @@ impl SlaveAddr {
     fn addr(self, default: u8) -> u8 {
         match self {
             SlaveAddr::Default => default,
-            SlaveAddr::Alternative(a2, a1, a0) => default           |
-                                                  ((a2 as u8) << 2) |
-                                                  ((a1 as u8) << 1) |
-                                                    a0 as u8
+            SlaveAddr::Alternative(a2, a1, a0) => {
+                default
+                    | ((a2 as u8) << 2)
+                    | ((a1 as u8) << 1)
+                    | a0 as u8
         }
     }
+}
 }
 
 const DEVICE_BASE_ADDRESS: u8 = 0b100_0000;
@@ -257,14 +260,14 @@ pub struct Tmp006<I2C> {
 
 impl<I2C, E> Tmp006<I2C>
 where
-    I2C: i2c::Write<Error = E>
+    I2C: i2c::Write<Error = E>,
 {
     /// Create new instance of the TMP006 device.
     pub fn new(i2c: I2C, address: SlaveAddr) -> Self {
         Tmp006 {
             i2c,
             address: address.addr(DEVICE_BASE_ADDRESS),
-            config: ConfigHigh::default()
+            config: ConfigHigh::default(),
         }
     }
 
@@ -345,7 +348,7 @@ where
 
 impl<I2C, E> Tmp006<I2C>
 where
-    I2C: i2c::WriteRead<Error = E>
+    I2C: i2c::WriteRead<Error = E>,
 {
     /// Read the object temperature in Kelvins.
     ///
@@ -359,7 +362,7 @@ where
     /// [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
     pub fn read_object_temperature(
         &mut self,
-        calibration_factor: f64
+        calibration_factor: f64,
     ) -> nb::Result<f64, Error<E>> {
         const A1: f64 = 1.75e-3;
         const A2: f64 = -1.678e-5;
@@ -375,12 +378,14 @@ where
 
         let t_diff = f64::from(t_die) - T_REF;
         let t_diff_sq = t_diff * t_diff;
-        let vos = B0 + B1*t_diff + B2*t_diff_sq;
+        let vos = B0 + B1 * t_diff + B2 * t_diff_sq;
         let v_diff = f64::from(v_obj) - vos;
-        let fv_obj = v_diff + C2*v_diff*v_diff;
+        let fv_obj = v_diff + C2 * v_diff * v_diff;
         let s0 = calibration_factor;
-        let s = s0 * (1.0+A1*t_diff +A2*t_diff_sq);
-        let tobj = (libm::pow(f64::from(t_die), 4.0) + fv_obj / s).sqrt().sqrt();
+        let s = s0 * (1.0 + A1 * t_diff + A2 * t_diff_sq);
+        let tobj = (libm::pow(f64::from(t_die), 4.0) + fv_obj / s)
+            .sqrt()
+            .sqrt();
 
         Ok(tobj)
     }
@@ -396,8 +401,12 @@ where
         if !ready {
             return Err(nb::Error::WouldBlock);
         }
-        let v = self.read_register(Register::V_OBJECT).map_err(nb::Error::Other)?;
-        let temp = self.read_register(Register::TEMP_AMBIENT).map_err(nb::Error::Other)?;
+        let v = self
+            .read_register(Register::V_OBJECT)
+            .map_err(nb::Error::Other)?;
+        let temp = self
+            .read_register(Register::TEMP_AMBIENT)
+            .map_err(nb::Error::Other)?;
         let data = SensorData {
             object_voltage: v as i16,
             ambient_temperature: temp as i16 / 4,
