@@ -8,6 +8,7 @@
 //! - Enable/disable the device. See: [`enable()`].
 //! - Read the object temperature. See: [`read_object_temperature()`].
 //! - Read the object voltage and ambient temperature raw data. See: [`read_sensor_data()`].
+//! - Calculate the object temperature from the sensor raw data. See: [`calculate_object_temperature()`].
 //! - Set the ADC conversion rate. See: [`set_conversion_rate()`].
 //! - Enable/disable the DRDY pin. See: [`enable_drdy_pin()`].
 //! - Read whether data is ready to be read. See: [`is_data_ready()`].
@@ -18,6 +19,7 @@
 //! [`enable()`]: struct.Tmp006.html#method.enable
 //! [`read_object_temperature()`]: struct.Tmp006.html#method.read_object_temperature
 //! [`read_sensor_data()`]: struct.Tmp006.html#method.read_sensor_data
+//! [`calculate_object_temperature()`]: struct.Tmp006.html#method.calculate_object_temperature
 //! [`set_conversion_rate()`]: struct.Tmp006.html#method.set_conversion_rate
 //! [`enable_drdy_pin()`]: struct.Tmp006.html#method.enable_drdy_pin
 //! [`is_data_ready()`]: struct.Tmp006.html#method.is_data_ready
@@ -95,7 +97,7 @@
 //! # }
 //! ```
 //!
-//! ### Read raw sensor data
+//! ### Read raw sensor data and calculate the object temperature manually
 //!
 //! ```no_run
 //! extern crate linux_embedded_hal as hal;
@@ -113,6 +115,9 @@
 //! println!(
 //!     "Object voltage: {}\nAmbient temperature: {}",
 //!     data.object_voltage, data.ambient_temperature);
+//! let calibration_factor = 6e-14;
+//! let temp = sensor.calculate_object_temperature(data, calibration_factor);
+//! println!("Temperature: {}K", temp);
 //! # }
 //! ```
 //!
@@ -416,6 +421,25 @@ where
         &mut self,
         calibration_factor: f64,
     ) -> nb::Result<f64, Error<E>> {
+        let data = self.read_sensor_data()?;
+        let temp = self.calculate_object_temperature(data, calibration_factor);
+        Ok(temp)
+    }
+
+    /// Calculate the object temperature in Kelvins.
+    ///
+    /// Given the sensor data and a calibration factor.
+    ///
+    /// The input calibration factor can be calculated with the formulas
+    /// provided in the [TMP006 user guide].
+    /// Typical values are between `5*10^-14` and `7*10^-14`
+    ///
+    /// [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
+    pub fn calculate_object_temperature(
+        &self,
+        data: SensorData,
+        calibration_factor: f64,
+    ) -> f64 {
         const A1: f64 = 1.75e-3;
         const A2: f64 = -1.678e-5;
         const B0: f64 = -2.94e-5;
@@ -425,20 +449,17 @@ where
         const T_REF: f64 = 298.15;
         const V_LSB_SIZE: f64 = 156.25e-9;
 
-        let data = self.read_sensor_data()?;
         let v_obj = f64::from(data.object_voltage) * V_LSB_SIZE;
         let t_die_k = f64::from(data.ambient_temperature) / 128.0 + 273.15;
 
         let t_diff = t_die_k - T_REF;
         let t_diff_sq = t_diff * t_diff;
-        let vos = B0 + B1 * t_diff + B2 * t_diff_sq;
-        let v_diff = v_obj - vos;
+        let v_os = B0 + B1 * t_diff + B2 * t_diff_sq;
+        let v_diff = v_obj - v_os;
         let fv_obj = v_diff + C2 * v_diff * v_diff;
         let s0 = calibration_factor;
         let s = s0 * (1.0 + A1 * t_diff + A2 * t_diff_sq);
-        let tobj = libm::pow(libm::pow(t_die_k, 4.0) + fv_obj / s, 0.25);
-
-        Ok(tobj)
+        libm::pow(libm::pow(t_die_k, 4.0) + fv_obj / s, 0.25)
     }
 
     /// Read the data from the sensor.
