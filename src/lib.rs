@@ -51,6 +51,10 @@
 //! To use this driver, import this crate and an `embedded_hal` implementation,
 //! then instantiate the device.
 //!
+//! Please find additional examples in this repository: [tmp006-examples]
+//!
+//! [tmp006-examples]: https://github.com/eldruin/tmp006-examples
+//!
 //! ### Read object temperature
 //!
 //! ```no_run
