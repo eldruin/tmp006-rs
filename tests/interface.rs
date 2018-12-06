@@ -222,26 +222,33 @@ fn cannot_read_data_if_not_ready() {
 }
 
 #[test]
-fn can_read_object_temperature() {
-    /* For some example values of V_obj=514 and T_ambient=257.
+fn can_read_object_temperature_real_data() {
+    /* For some example values of V_obj=-100 and T_ambient=675.
         If you put this into maxima (the program) (or mathematica) you should
-        be able to get the same result: 89996.69046659373.
+        be able to get the same result: 278.5701125352883.
         sqrt(sqrt(
-            257^4+(
-                (514 - (-2.94e-5 -5.7e-7*(257-298.15) + 4.63e-9*(257-298.15)²))
-                + 13.4 * (514 - (-2.94e-5 -5.7e-7*(257-298.15) + 4.63e-9*(257-298.15)²))²)
+            (675/128 + 273.15)^4+(
+                ((-100*156.25*10^-9)
+                    - (-2.94e-5 -5.7e-7*((675/128 + 273.15)-298.15)
+                    + 4.63e-9*((675/128 + 273.15)-298.15)²))
+                + 13.4 * ((-100*156.25*10^-9)
+                - (-2.94e-5 -5.7e-7*((675/128 + 273.15)-298.15)
+                    + 4.63e-9*((675/128 + 273.15)-298.15)²))²)
                  /
-                ( 6e-14*(1+ 1.75e-3*(257-298.15)-1.678e-5*(257-298.15)²) )
+                ( 6e-14
+                    * (1 + 1.75e-3*((675/128 + 273.15)-298.15)
+                        -1.678e-5*((675/128 + 273.15)-298.15)²)
+                )
         ))
     */
 
     let trans = [
         I2cTrans::write_read(DEV_ADDR, vec![Register::CONFIG], vec![0, CONFIG_RDY_LOW]),
-        I2cTrans::write_read(DEV_ADDR, vec![Register::V_OBJECT], vec![2, 2]),
-        I2cTrans::write_read(DEV_ADDR, vec![Register::TEMP_AMBIENT], vec![4, 4]),
+        I2cTrans::write_read(DEV_ADDR, vec![Register::V_OBJECT], vec![0xFF, 0b1001_1011]),
+        I2cTrans::write_read(DEV_ADDR, vec![Register::TEMP_AMBIENT], vec![0xA, 0x8C]),
     ];
     let mut tmp = new(&trans);
     let current = tmp.read_object_temperature(6e-14).unwrap();
-    assert!((current - 89996.69).abs() < 0.1);
+    assert!((current - 278.57).abs() < 0.1);
     destroy(tmp);
 }

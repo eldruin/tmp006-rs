@@ -423,12 +423,13 @@ where
         const B2: f64 = 4.63e-9;
         const C2: f64 = 13.4;
         const T_REF: f64 = 298.15;
+        const V_LSB_SIZE: f64 = 156.25e-9;
 
         let data = self.read_sensor_data()?;
-        let v_obj = data.object_voltage;
-        let t_die = data.ambient_temperature;
+        let v_obj = f64::from(data.object_voltage) * V_LSB_SIZE;
+        let t_die_k = f64::from(data.ambient_temperature) / 128.0 + 273.15;
 
-        let t_diff = f64::from(t_die) - T_REF;
+        let t_diff = f64::from(t_die_k) - T_REF;
         let t_diff_sq = t_diff * t_diff;
         let vos = B0 + B1 * t_diff + B2 * t_diff_sq;
         let v_diff = f64::from(v_obj) - vos;
