@@ -41,6 +41,27 @@ spacing to the object being measured is available.
 Datasheet:
 - [TMP006/B](http://www.ti.com/ww/eu/sensampbook/tmp006.pdf)
 
+## Usage example
+
+```no_run
+extern crate linux_embedded_hal as hal;
+extern crate tmp006;
+
+use hal::I2cdev;
+use tmp006::{Tmp006, SlaveAddr};
+
+# fn main() {
+let dev = I2cdev::new("/dev/i2c-1").unwrap();
+let address = SlaveAddr::default();
+let mut sensor = Tmp006::new(dev, address);
+let calibration_factor = 6e-14;
+let temperature = sensor
+    .read_object_temperature(calibration_factor)
+    .unwrap();
+println!("Temperature: {}K", temperature);
+# }
+```
+
 ## License
 
 Licensed under either of

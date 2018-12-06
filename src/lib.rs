@@ -46,6 +46,67 @@
 //! User guide:
 //! - [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
 //!
+//! ## Usage examples (see also examples folder)
+//!
+//! To use this driver, import this crate and an `embedded_hal` implementation,
+//! then instantiate the device.
+//!
+//! ### Read object temperature
+//!
+//! ```no_run
+//! extern crate linux_embedded_hal as hal;
+//! extern crate tmp006;
+//!
+//! use hal::I2cdev;
+//! use tmp006::{Tmp006, SlaveAddr};
+//!
+//! # fn main() {
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//! let address = SlaveAddr::default();
+//! let mut sensor = Tmp006::new(dev, address);
+//! let calibration_factor = 6e-14;
+//! let temperature = sensor
+//!     .read_object_temperature(calibration_factor)
+//!     .unwrap();
+//! println!("Temperature: {}K", temperature);
+//! # }
+//! ```
+//!
+//! ### Provide an alternative address
+//!
+//! ```no_run
+//! extern crate linux_embedded_hal as hal;
+//! extern crate tmp006;
+//!
+//! use hal::I2cdev;
+//! use tmp006::{Tmp006, SlaveAddr};
+//!
+//! # fn main() {
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//! let (a2, a1, a0) = (false, false, true);
+//! let address = SlaveAddr::Alternative(a2, a1, a0);
+//! let mut sensor = Tmp006::new(dev, address);
+//! # }
+//! ```
+//! ### Read raw sensor data
+//!
+//! ```no_run
+//! extern crate linux_embedded_hal as hal;
+//! extern crate tmp006;
+//!
+//! use hal::I2cdev;
+//! use tmp006::{Tmp006, SlaveAddr};
+//!
+//! # fn main() {
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//! let mut sensor = Tmp006::new(dev, SlaveAddr::default());
+//! let data = sensor.read_sensor_data().unwrap();
+//! println!(
+//!     "Object voltage: {}\nAmbient temperature: {}",
+//!     data.object_voltage, data.ambient_temperature);
+//! # }
+//! ```
+//!
 #![deny(missing_docs, unsafe_code, warnings)]
 #![no_std]
 
