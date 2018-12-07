@@ -33,11 +33,7 @@ where
     /// Typical values are between `5*10^-14` and `7*10^-14`
     ///
     /// [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
-    pub fn calculate_object_temperature(
-        &self,
-        data: SensorData,
-        calibration_factor: f64,
-    ) -> f64 {
+    pub fn calculate_object_temperature(&self, data: SensorData, calibration_factor: f64) -> f64 {
         const A1: f64 = 1.75e-3;
         const A2: f64 = -1.678e-5;
         const B0: f64 = -2.94e-5;

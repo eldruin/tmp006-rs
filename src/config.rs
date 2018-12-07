@@ -1,7 +1,7 @@
 use hal::blocking::i2c;
 use {
-    BitFlagsHigh, ConfigHigh, ConversionRate, DEVICE_BASE_ADDRESS,
-    Error, Register, SlaveAddr, Tmp006
+    BitFlagsHigh, ConfigHigh, ConversionRate, Error, Register, SlaveAddr, Tmp006,
+    DEVICE_BASE_ADDRESS,
 };
 
 impl ConfigHigh {
