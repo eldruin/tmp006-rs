@@ -24,6 +24,8 @@ This driver allows you to:
 - Read the manufacturer ID. See: `read_manufacturer_id()`.
 - Read the device ID. See: `read_device_id()`.
 
+[Introductory blog post](https://blog.eldruin.com/tmp006-contact-less-infrared-ir-thermopile-driver-in-rust/)
+
 ## The device
 
 The TMP006 and TMP006B are the first in a series of temperature sensors

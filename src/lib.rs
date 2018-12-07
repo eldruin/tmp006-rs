@@ -27,6 +27,7 @@
 //! [`read_manufacturer_id()`]: struct.Tmp006.html#method.read_manufacturer_id
 //! [`read_device_id()`]: struct.Tmp006.html#method.read_device_id
 //!
+//! [Introductory blog post](https://blog.eldruin.com/tmp006-contact-less-infrared-ir-thermopile-driver-in-rust/)
 //!
 //! ## The device
 //!
