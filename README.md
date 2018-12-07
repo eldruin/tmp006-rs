@@ -52,7 +52,7 @@ Please find additional examples in this repository: [tmp006-examples]
 
 [tmp006-examples]: https://github.com/eldruin/tmp006-examples
 
-```no_run
+```rust
 extern crate linux_embedded_hal as hal;
 extern crate tmp006;
 
