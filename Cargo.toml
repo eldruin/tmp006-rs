@@ -20,7 +20,7 @@ include = [
 ]
 
 [dependencies]
-embedded-hal = "0.2"
+embedded-hal = "0.2.5"
 libm = "0.2"
 nb = "1"
 
