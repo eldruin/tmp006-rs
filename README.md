@@ -4,7 +4,6 @@
 [![Docs](https://docs.rs/tmp006/badge.svg)](https://docs.rs/tmp006)
 [![Build Status](https://github.com/eldruin/tmp006-rs/workflows/Build/badge.svg)](https://github.com/eldruin/tmp006-rs/actions?query=workflow%3ABuild)
 [![Coverage Status](https://coveralls.io/repos/github/eldruin/tmp006-rs/badge.svg?branch=master)](https://coveralls.io/github/eldruin/tmp006-rs?branch=master)
-![Maintenance Intention](https://img.shields.io/badge/maintenance-actively--developed-brightgreen.svg)
 
 This is a platform agnostic Rust driver for the TMP006/TMP006B non-contact
 infrared (IR) thermopile temperature sensor, based on the
