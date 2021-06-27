@@ -33,7 +33,7 @@ const CONFIG_DEFAULT: u8 = BitFlagsHigh::MOD | BitFlagsHigh::CR1;
 const CONFIG_RDY_LOW: u8 = BitFlagsLow::DRDY;
 
 fn new(transactions: &[I2cTrans]) -> Tmp006<I2cMock> {
-    Tmp006::new(I2cMock::new(&transactions), SlaveAddr::default())
+    Tmp006::new(I2cMock::new(transactions), SlaveAddr::default())
 }
 
 fn destroy(tmp: Tmp006<I2cMock>) {

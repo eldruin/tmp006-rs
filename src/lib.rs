@@ -177,11 +177,7 @@
 #![no_std]
 
 extern crate embedded_hal as hal;
-extern crate libm;
 extern crate nb;
-// necessary only for targets without math function implementation
-#[allow(unused_imports)]
-use libm::F64Ext;
 
 /// All possible errors in this crate
 #[derive(Debug)]
