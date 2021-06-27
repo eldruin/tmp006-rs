@@ -8,21 +8,21 @@ const DEV_ADDR: u8 = 0b100_0000;
 
 struct Register;
 impl Register {
-    const V_OBJECT     : u8 = 0x00;
-    const TEMP_AMBIENT : u8 = 0x01;
-    const CONFIG       : u8 = 0x02;
-    const MANUFAC_ID   : u8 = 0xFE;
-    const DEVICE_ID    : u8 = 0xFE;
+    const V_OBJECT: u8 = 0x00;
+    const TEMP_AMBIENT: u8 = 0x01;
+    const CONFIG: u8 = 0x02;
+    const MANUFAC_ID: u8 = 0xFE;
+    const DEVICE_ID: u8 = 0xFE;
 }
 
 struct BitFlagsHigh;
 impl BitFlagsHigh {
-    const SW_RESET : u8 = 0b1000_0000;
-    const MOD      : u8 = 0b0111_0000;
-    const CR2      : u8 = 0b0000_1000;
-    const CR1      : u8 = 0b0000_0100;
-    const CR0      : u8 = 0b0000_0010;
-    const DRDY_EN  : u8 = 0b0000_0001;
+    const SW_RESET: u8 = 0b1000_0000;
+    const MOD: u8 = 0b0111_0000;
+    const CR2: u8 = 0b0000_1000;
+    const CR1: u8 = 0b0000_0100;
+    const CR0: u8 = 0b0000_0010;
+    const DRDY_EN: u8 = 0b0000_0001;
 }
 struct BitFlagsLow;
 impl BitFlagsLow {
@@ -115,11 +115,11 @@ macro_rules! conversion_rate_test {
     };
 }
 
-conversion_rate_test!(can_set_cr4,    Cps4,    false, false, false);
-conversion_rate_test!(can_set_cr2,    Cps2,    false, false,  true);
-conversion_rate_test!(can_set_cr1,    Cps1,    false,  true, false);
-conversion_rate_test!(can_set_cr0_5,  Cps0_5,  false,  true,  true);
-conversion_rate_test!(can_set_cr0_25, Cps0_25,  true, false, false);
+conversion_rate_test!(can_set_cr4, Cps4, false, false, false);
+conversion_rate_test!(can_set_cr2, Cps2, false, false, true);
+conversion_rate_test!(can_set_cr1, Cps1, false, true, false);
+conversion_rate_test!(can_set_cr0_5, Cps0_5, false, true, true);
+conversion_rate_test!(can_set_cr0_25, Cps0_25, true, false, false);
 
 macro_rules! write_read_test {
     ($name:ident, $method:ident, $expected:expr, $( [ $reg:ident, $value_msb:expr, $value_lsb:expr ] ),*) => {
@@ -152,12 +152,12 @@ macro_rules! sensor_data_test {
     };
 }
 
-sensor_data_test!(can_read_voltage_max,  32767, 0, 0x7F, 0xFF, 0, 0);
-sensor_data_test!(can_read_voltage_0,        0, 0,    0,    0, 0, 0);
+sensor_data_test!(can_read_voltage_max, 32767, 0, 0x7F, 0xFF, 0, 0);
+sensor_data_test!(can_read_voltage_0, 0, 0, 0, 0, 0, 0);
 sensor_data_test!(can_read_voltage_min, -32768, 0, 0x80, 0x00, 0, 0);
 
-sensor_data_test!(can_read_ambient_t_max, 0,  8191, 0, 0, 0x7F, 0xFC);
-sensor_data_test!(can_read_ambient_t_0,   0,     0, 0, 0,    0,    0);
+sensor_data_test!(can_read_ambient_t_max, 0, 8191, 0, 0, 0x7F, 0xFC);
+sensor_data_test!(can_read_ambient_t_0, 0, 0, 0, 0, 0, 0);
 sensor_data_test!(can_read_ambient_t_min, 0, -8192, 0, 0, 0x80, 0x00);
 
 write_read_test!(

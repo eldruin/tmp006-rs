@@ -12,8 +12,6 @@ fn main() {
     let address = SlaveAddr::default();
     let mut sensor = Tmp006::new(dev, address);
     let calibration_factor = 6e-14;
-    let temperature = block!(sensor
-        .read_object_temperature(calibration_factor))
-    .unwrap();
+    let temperature = block!(sensor.read_object_temperature(calibration_factor)).unwrap();
     println!("Temperature: {}K", temperature);
 }

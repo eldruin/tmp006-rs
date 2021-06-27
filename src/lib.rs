@@ -239,39 +239,35 @@ impl SlaveAddr {
         match self {
             SlaveAddr::Default => default,
             SlaveAddr::Alternative(a2, a1, a0) => {
-                default
-                    | ((a2 as u8) << 2)
-                    | ((a1 as u8) << 1)
-                    | a0 as u8
+                default | ((a2 as u8) << 2) | ((a1 as u8) << 1) | a0 as u8
+            }
         }
     }
-}
 }
 
 const DEVICE_BASE_ADDRESS: u8 = 0b100_0000;
 
 struct Register;
 impl Register {
-    const V_OBJECT     : u8 = 0x00;
-    const TEMP_AMBIENT : u8 = 0x01;
-    const CONFIG       : u8 = 0x02;
-    const MANUFAC_ID   : u8 = 0xFE;
-    const DEVICE_ID    : u8 = 0xFE;
+    const V_OBJECT: u8 = 0x00;
+    const TEMP_AMBIENT: u8 = 0x01;
+    const CONFIG: u8 = 0x02;
+    const MANUFAC_ID: u8 = 0xFE;
+    const DEVICE_ID: u8 = 0xFE;
 }
-
 
 struct BitFlagsHigh;
 impl BitFlagsHigh {
-    const SW_RESET : u8 = 0b1000_0000;
-    const MOD      : u8 = 0b0111_0000;
-    const CR2      : u8 = 0b0000_1000;
-    const CR1      : u8 = 0b0000_0100;
-    const CR0      : u8 = 0b0000_0010;
-    const DRDY_EN  : u8 = 0b0000_0001;
+    const SW_RESET: u8 = 0b1000_0000;
+    const MOD: u8 = 0b0111_0000;
+    const CR2: u8 = 0b0000_1000;
+    const CR1: u8 = 0b0000_0100;
+    const CR0: u8 = 0b0000_0010;
+    const DRDY_EN: u8 = 0b0000_0001;
 }
 struct BitFlagsLow;
 impl BitFlagsLow {
-    const DRDY     : u8 = 0b1000_0000;
+    const DRDY: u8 = 0b1000_0000;
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -305,10 +301,25 @@ mod tests {
 
     #[test]
     fn can_generate_alternative_addresses() {
-        assert_eq!(0b100_0000, SlaveAddr::Alternative(false, false, false).addr(DEVICE_BASE_ADDRESS));
-        assert_eq!(0b100_0001, SlaveAddr::Alternative(false, false,  true).addr(DEVICE_BASE_ADDRESS));
-        assert_eq!(0b100_0010, SlaveAddr::Alternative(false,  true, false).addr(DEVICE_BASE_ADDRESS));
-        assert_eq!(0b100_0100, SlaveAddr::Alternative( true, false, false).addr(DEVICE_BASE_ADDRESS));
-        assert_eq!(0b100_0111, SlaveAddr::Alternative( true,  true,  true).addr(DEVICE_BASE_ADDRESS));
+        assert_eq!(
+            0b100_0000,
+            SlaveAddr::Alternative(false, false, false).addr(DEVICE_BASE_ADDRESS)
+        );
+        assert_eq!(
+            0b100_0001,
+            SlaveAddr::Alternative(false, false, true).addr(DEVICE_BASE_ADDRESS)
+        );
+        assert_eq!(
+            0b100_0010,
+            SlaveAddr::Alternative(false, true, false).addr(DEVICE_BASE_ADDRESS)
+        );
+        assert_eq!(
+            0b100_0100,
+            SlaveAddr::Alternative(true, false, false).addr(DEVICE_BASE_ADDRESS)
+        );
+        assert_eq!(
+            0b100_0111,
+            SlaveAddr::Alternative(true, true, true).addr(DEVICE_BASE_ADDRESS)
+        );
     }
 }
