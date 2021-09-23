@@ -181,7 +181,7 @@ pub struct SensorData {
 }
 
 /// Possible slave addresses
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SlaveAddr {
     /// Default slave address
     Default,
