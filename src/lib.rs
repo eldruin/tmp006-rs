@@ -141,6 +141,8 @@
 //!     // add some delay here...
 //! }
 //! ```
+
+#![doc(html_root_url = "https://docs.rs/tmp006/0.2.0")]
 #![deny(missing_docs, unsafe_code)]
 #![no_std]
 

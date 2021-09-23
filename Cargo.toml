@@ -1,6 +1,6 @@
 [package]
 name = "tmp006"
-version = "0.1.0"
+version = "0.2.0" # remember to update html_root_url
 authors = ["Diego Barrios Romero <eldruin@gmail.com>"]
 repository = "https://github.com/eldruin/tmp006-rs"
 license = "MIT OR Apache-2.0"
