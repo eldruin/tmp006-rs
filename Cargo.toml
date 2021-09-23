@@ -10,6 +10,7 @@ keywords = ["temperature", "thermopile", "sensor", "driver", "embedded-hal-drive
 categories = ["embedded", "hardware-support", "no-std"]
 homepage = "https://github.com/eldruin/tmp006-rs"
 documentation = "https://docs.rs/tmp006"
+edition = "2018"
 include = [
     "/**/*.rs",
     "/Cargo.toml",

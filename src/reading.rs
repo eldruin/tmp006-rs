@@ -1,5 +1,5 @@
-use hal::blocking::i2c;
-use {BitFlagsLow, Error, Register, SensorData, Tmp006};
+use crate::{BitFlagsLow, Error, Register, SensorData, Tmp006};
+use embedded_hal::blocking::i2c;
 
 impl<I2C, E> Tmp006<I2C>
 where

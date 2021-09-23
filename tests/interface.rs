@@ -1,8 +1,5 @@
-extern crate nb;
-extern crate tmp006;
+use embedded_hal_mock::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 use tmp006::{ConversionRate, SensorData, SlaveAddr, Tmp006};
-extern crate embedded_hal_mock as hal;
-use hal::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 
 const DEV_ADDR: u8 = 0b100_0000;
 

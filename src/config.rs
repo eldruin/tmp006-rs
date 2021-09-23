@@ -1,8 +1,8 @@
-use hal::blocking::i2c;
-use {
+use crate::{
     BitFlagsHigh, ConfigHigh, ConversionRate, Error, Register, SlaveAddr, Tmp006,
     DEVICE_BASE_ADDRESS,
 };
+use embedded_hal::blocking::i2c;
 
 impl ConfigHigh {
     fn with_high(self, mask: u8) -> Self {
@@ -91,8 +91,8 @@ where
     ///
     /// Note: calling this clears the data-ready bit.
     pub fn set_conversion_rate(&mut self, rate: ConversionRate) -> Result<(), Error<E>> {
-        use BitFlagsHigh as BF;
-        use ConversionRate as CR;
+        use crate::BitFlagsHigh as BF;
+        use crate::ConversionRate as CR;
         let config;
         match rate {
             CR::Cps4 => {
