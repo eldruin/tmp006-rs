@@ -241,7 +241,7 @@ struct ConfigHigh {
 }
 
 /// TMP006 device driver.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Tmp006<I2C> {
     /// The concrete I²C device implementation.
     i2c: I2C,

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Implemented `Copy` and `PartialEq` for `SlaveAddr`.
 
+### Changed
+- [breaking-change] Removed `Default` implementation for `Tmp006`.
+
 ## 0.1.0 - 2018-12-07
 
 This is the initial release to crates.io of the feature-complete driver. There
