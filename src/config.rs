@@ -93,44 +93,33 @@ where
     pub fn set_conversion_rate(&mut self, rate: ConversionRate) -> Result<(), Error<E>> {
         use crate::BitFlagsHigh as BF;
         use crate::ConversionRate as CR;
-        let config;
-        match rate {
-            CR::Cps4 => {
-                config = self
-                    .config
-                    .with_low(BF::CR2)
-                    .with_low(BF::CR1)
-                    .with_low(BF::CR0)
-            }
-            CR::Cps2 => {
-                config = self
-                    .config
-                    .with_low(BF::CR2)
-                    .with_low(BF::CR1)
-                    .with_high(BF::CR0)
-            }
-            CR::Cps1 => {
-                config = self
-                    .config
-                    .with_low(BF::CR2)
-                    .with_high(BF::CR1)
-                    .with_low(BF::CR0)
-            }
-            CR::Cps0_5 => {
-                config = self
-                    .config
-                    .with_low(BF::CR2)
-                    .with_high(BF::CR1)
-                    .with_high(BF::CR0)
-            }
-            CR::Cps0_25 => {
-                config = self
-                    .config
-                    .with_high(BF::CR2)
-                    .with_low(BF::CR1)
-                    .with_low(BF::CR0)
-            }
-        }
+        let config = match rate {
+            CR::Cps4 => self
+                .config
+                .with_low(BF::CR2)
+                .with_low(BF::CR1)
+                .with_low(BF::CR0),
+            CR::Cps2 => self
+                .config
+                .with_low(BF::CR2)
+                .with_low(BF::CR1)
+                .with_high(BF::CR0),
+            CR::Cps1 => self
+                .config
+                .with_low(BF::CR2)
+                .with_high(BF::CR1)
+                .with_low(BF::CR0),
+            CR::Cps0_5 => self
+                .config
+                .with_low(BF::CR2)
+                .with_high(BF::CR1)
+                .with_high(BF::CR0),
+            CR::Cps0_25 => self
+                .config
+                .with_high(BF::CR2)
+                .with_low(BF::CR1)
+                .with_low(BF::CR0),
+        };
         self.write_config(config)
     }
 
