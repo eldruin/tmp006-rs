@@ -1,4 +1,4 @@
-use embedded_hal_mock::i2c::{Mock as I2cMock, Transaction as I2cTrans};
+use embedded_hal_mock::eh1::i2c::{Mock as I2cMock, Transaction as I2cTrans};
 use tmp006::{ConversionRate, SensorData, SlaveAddr, Tmp006};
 
 const DEV_ADDR: u8 = 0b100_0000;

@@ -2,7 +2,7 @@ use crate::{
     BitFlagsHigh, ConfigHigh, ConversionRate, Error, Register, SlaveAddr, Tmp006,
     DEVICE_BASE_ADDRESS,
 };
-use embedded_hal::blocking::i2c;
+use embedded_hal::i2c;
 
 impl ConfigHigh {
     fn with_high(self, mask: u8) -> Self {
@@ -27,7 +27,7 @@ impl Default for ConfigHigh {
 
 impl<I2C, E> Tmp006<I2C>
 where
-    I2C: i2c::Write<Error = E>,
+    I2C: i2c::I2c<Error = E>,
 {
     /// Create new instance of the TMP006 device.
     pub fn new(i2c: I2C, address: SlaveAddr) -> Self {

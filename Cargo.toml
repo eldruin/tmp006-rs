@@ -21,13 +21,13 @@ include = [
 ]
 
 [dependencies]
-embedded-hal = "0.2.5"
+embedded-hal = "1.0"
 libm = "0.2"
 nb = "1"
 
 [dev-dependencies]
-linux-embedded-hal = "0.3"
-embedded-hal-mock = "0.8"
+linux-embedded-hal = "0.4"
+embedded-hal-mock = {version = "0.10", default-features = false, features = ["eh1"]}
 
 [profile.release]
 lto = true

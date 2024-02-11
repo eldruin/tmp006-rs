@@ -1,9 +1,9 @@
 use crate::{BitFlagsLow, Error, Register, SensorData, Tmp006};
-use embedded_hal::blocking::i2c;
+use embedded_hal::i2c;
 
 impl<I2C, E> Tmp006<I2C>
 where
-    I2C: i2c::WriteRead<Error = E>,
+    I2C: i2c::I2c<Error = E>,
 {
     /// Read the object temperature in Kelvins.
     ///
