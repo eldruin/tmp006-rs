@@ -8,13 +8,14 @@ pub enum Error<E> {
 }
 
 /// ADC conversion rate
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ConversionRate {
     /// 4 conversions per second
     Cps4,
     /// 2 conversions per second
     Cps2,
     /// 1 conversion per second (default)
+    #[default]
     Cps1,
     /// 0.5 conversions per second
     Cps0_5,
@@ -28,7 +29,7 @@ pub enum ConversionRate {
 /// [`read_object_temperature()`].
 ///
 /// [`read_object_temperature()`]: struct.Tmp006.html#method.read_object_temperature
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct SensorData {
     /// Object voltage: `[-32768..32767]`
     pub object_voltage: i16,
@@ -37,22 +38,16 @@ pub struct SensorData {
 }
 
 /// Possible slave addresses
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SlaveAddr {
     /// Default slave address
+    #[default]
     Default,
     /// Alternative slave address providing bit values for A2, A1 and A0
     ///
     /// Some of these combinations require connecting the ADDR0 pin to
     /// SCL or SDA. Check table 1 on page 7 of the datasheet: [TMP006/B].
     Alternative(bool, bool, bool),
-}
-
-impl Default for SlaveAddr {
-    /// Default slave address
-    fn default() -> Self {
-        SlaveAddr::Default
-    }
 }
 
 impl SlaveAddr {
