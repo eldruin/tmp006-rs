@@ -45,7 +45,7 @@
 //! spacing to the object being measured is available.
 //!
 //! Datasheet:
-//! - [TMP006/B](http://www.ti.com/ww/eu/sensampbook/tmp006.pdf)
+//! - [TMP006/B](https://media.digikey.com/pdf/Data%20Sheets/Texas%20Instruments%20PDFs/TMP006(B).pdf)
 //! User guide:
 //! - [TMP006 user guide](https://cdn-shop.adafruit.com/datasheets/tmp006ug.pdf)
 //!
